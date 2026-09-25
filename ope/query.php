@@ -23,6 +23,17 @@ function ope_ident(string $name): string
     return $name;
 }
 
+/** 手術テーブル名に sjt_prefix（'スキーマ.' や 'DB.スキーマ.'）を付けて返す */
+function ope_t(array $c, string $table): string
+{
+    $prefix = trim((string)($c['sjt_prefix'] ?? ''));
+    if ($prefix !== '' && substr($prefix, -1) !== '.') { $prefix .= '.'; }
+    if (!preg_match('/^([A-Za-z0-9_]+\.){0,2}$/', $prefix)) {
+        throw new RuntimeException('sjt_prefix の設定が不正です: ' . $prefix);
+    }
+    return $prefix . $table;
+}
+
 /** カテ室除外条件（cath_rooms は英数字2桁以内のみ許可して埋め込む） */
 function ope_cath_condition(array $c): string
 {
@@ -48,13 +59,18 @@ function ope_sql(array $c): string
     $nameSel  = $nameCol !== '' ? 'k.' . ope_ident($nameCol) : "''";
     $nameJoin = $nameCol !== '' ? "left outer join kanmf k on k.code = d.SjtKancd" : '';
 
+    $tDat  = ope_t($c, 'SjtDatf3');
+    $tSub  = ope_t($c, 'SjtDatf3Sub');
+    $tByo2 = ope_t($c, 'SjtByokanSub2');
+    $tByo  = ope_t($c, 'SjtByokan');
+
     $byomeiSel = "''";
     if (!empty($c['with_byomei'])) {
         $byomeiSel = "isnull(
-            (select top 1 b2.SjtKnNam from SjtByokanSub2 b2
+            (select top 1 b2.SjtKnNam from {$tByo2} b2
               where b2.SjtKancd = d.SjtKancd and b2.SjtRei = d.SjtRei and rtrim(b2.SjtKnNam) <> ''
               order by b2.SjtJissiKbn desc, b2.SjtHyojiNo),
-            (select top 1 b1.SjtByomei from SjtByokan b1
+            (select top 1 b1.SjtByomei from {$tByo} b1
               where b1.SjtKancd = d.SjtKancd and b1.SjtRei = d.SjtRei and rtrim(b1.SjtByomei) <> ''
               order by b1.SjtJissiKbn desc, b1.SjtHyojiNo))";
     }
@@ -77,8 +93,8 @@ select
     s.SjtYobi1 as yobi1, s.SjtYobi2 as yobi2, s.SjtYobi3 as yobi3,
     {$nameSel} as kanname,
     {$byomeiSel} as byomei
-from SjtDatf3 d
-    left outer join SjtDatf3Sub s
+from {$tDat} d
+    left outer join {$tSub} s
         on  s.SjtKancd = d.SjtKancd
         and s.SjtRei   = d.SjtRei
     {$nameJoin}

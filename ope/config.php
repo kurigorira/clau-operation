@@ -30,6 +30,10 @@ $config = [
     'odbc_dsn'    => '',                 // 名前付きDSNがあればそれを優先
 
     // ---- 手術データの抽出条件 ----
+    // 手術テーブル(SjtDatf3 等)の置き場所。接続先DBの既定スキーマにあれば空のまま。
+    // 別スキーマ・別DBにある場合は check.php の「所在調査」の結果に従って設定する
+    // 例: 'dbo.' / 'newton.' / 'opedb.dbo.'
+    'sjt_prefix' => '',
     // カテ室の手術室番号（Newton.ini の [OPK] Catheroom=XX の値）。カテは手術として扱わない
     'cath_rooms' => [],
     // 患者マスタ(kanmf)の氏名列。check.php の「kanmf の列一覧」で確認して設定する

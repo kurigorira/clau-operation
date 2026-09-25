@@ -26,11 +26,19 @@ ope_header($config, 'ログイン');
 <div class="login-box">
   <h2>ログイン</h2>
   <p class="legend">患者情報を表示するため、ログインが必要です。</p>
-  <?php if ($error !== null): ?><div class="error"><?= h($error) ?></div><?php endif; ?>
   <?php if (empty($config['users'])): ?>
-    <div class="warn">ログインユーザーが未設定です。管理者は <code>config.local.php</code> の
-      <code>users</code> を設定してください（パスワードハッシュは check.php で作成できます）。</div>
-  <?php endif; ?>
+    <div class="warn">
+      <strong>ログインユーザーがまだ登録されていません。</strong><br>
+      ID とパスワードは、管理者が自分で決めて登録します（電子カルテのIDとは別です）。
+      <ol style="margin:6px 0 0;padding-left:20px">
+        <li><a href="check.php#hash">check.php の「8. ログイン用パスワードハッシュ作成」</a>で、
+          決めた ID とパスワードを入力して「ハッシュ作成」</li>
+        <li>表示された1行を <code>ope/config.local.php</code> の <code>return [</code> の中に貼り付けて保存</li>
+        <li>この画面に戻り、その ID とパスワードでログイン</li>
+      </ol>
+    </div>
+  <?php else: ?>
+  <?php if ($error !== null): ?><div class="error"><?= h($error) ?></div><?php endif; ?>
   <form method="post" action="login.php">
     <input type="hidden" name="csrf" value="<?= h(ope_csrf_token()) ?>">
     <input type="hidden" name="back" value="<?= h($back) ?>">
@@ -38,5 +46,6 @@ ope_header($config, 'ログイン');
     <label>パスワード<input type="password" name="pass" autocomplete="current-password" required></label>
     <button type="submit" class="btn">ログイン</button>
   </form>
+  <?php endif; ?>
 </div>
 <?php ope_footer();

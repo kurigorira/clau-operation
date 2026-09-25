@@ -37,7 +37,10 @@
    - `mysql` … 空床・レセプトアプリと同じ値でよい
    - `server` / `database` / `user` / `pass`（または `odbc_dsn`）… 空床アプリの `beds/config.local.php` と同じ値
 3. ブラウザで `http://<サーバ>/ope/check.php` を開く（ユーザー未設定のうちはログイン不要）
-   - **8. パスワードハッシュ作成** でハッシュを作り、`config.local.php` の `users` に `'ID' => 'ハッシュ',` で登録
+   - **8. パスワードハッシュ作成**：ログイン用の ID とパスワードを**自分で決めて**入力（電子カルテのIDとは別。例 `ope`）
+     → 表示された `'users' => ['ope' => '$2y$...'],` の1行を `config.local.php` に貼り付け
+   - **2. SjtDatf3 読み取り** が NG（オブジェクト名が無効）の場合は **2-2. 所在調査** を見て、
+     見つかった場所を `sjt_prefix`（例 `'dbo.'` / `'opedb.dbo.'`）に設定
    - **3. 値分布** の `SjtRoomNo` でカテ室の番号を確認 → `cath_rooms` に設定（Newton.ini `[OPK] Catheroom=XX` の値）
    - **4. kanmf の列一覧** で氏名の列を確認 → `patient_name_col` に設定
    - **6. 取得SQLの試験実行** が OK になることを確認
