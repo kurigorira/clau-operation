@@ -46,7 +46,7 @@ function ope_cath_condition(array $c): string
         }
         $rooms[] = "'" . $r . "'";
     }
-    return $rooms ? ' and d.SjtRoomNo not in (' . implode(',', $rooms) . ')' : '';
+    return $rooms ? ' and d.sjtroomno not in (' . implode(',', $rooms) . ')' : '';
 }
 
 /**
@@ -57,53 +57,53 @@ function ope_sql(array $c): string
 {
     $nameCol = trim((string)($c['patient_name_col'] ?? ''));
     $nameSel  = $nameCol !== '' ? 'k.' . ope_ident($nameCol) : "''";
-    $nameJoin = $nameCol !== '' ? "left outer join kanmf k on k.code = d.SjtKancd" : '';
+    $nameJoin = $nameCol !== '' ? "left outer join kanmf k on k.code = d.sjtkancd" : '';
 
-    $tDat  = ope_t($c, 'SjtDatf3');
-    $tSub  = ope_t($c, 'SjtDatf3Sub');
-    $tByo2 = ope_t($c, 'SjtByokanSub2');
-    $tByo  = ope_t($c, 'SjtByokan');
+    $tDat  = ope_t($c, 'sjtdatf3');
+    $tSub  = ope_t($c, 'sjtdatf3sub');
+    $tByo2 = ope_t($c, 'sjtbyokansub2');
+    $tByo  = ope_t($c, 'sjtbyokan');
 
     $byomeiSel = "''";
     if (!empty($c['with_byomei'])) {
         $byomeiSel = "isnull(
-            (select top 1 b2.SjtKnNam from {$tByo2} b2
-              where b2.SjtKancd = d.SjtKancd and b2.SjtRei = d.SjtRei and rtrim(b2.SjtKnNam) <> ''
-              order by b2.SjtJissiKbn desc, b2.SjtHyojiNo),
-            (select top 1 b1.SjtByomei from {$tByo} b1
-              where b1.SjtKancd = d.SjtKancd and b1.SjtRei = d.SjtRei and rtrim(b1.SjtByomei) <> ''
-              order by b1.SjtJissiKbn desc, b1.SjtHyojiNo))";
+            (select top 1 b2.sjtknnam from {$tByo2} b2
+              where b2.sjtkancd = d.sjtkancd and b2.sjtrei = d.sjtrei and rtrim(b2.sjtknnam) <> ''
+              order by b2.sjtjissikbn desc, b2.sjthyojino),
+            (select top 1 b1.sjtbyomei from {$tByo} b1
+              where b1.sjtkancd = d.sjtkancd and b1.sjtrei = d.sjtrei and rtrim(b1.sjtbyomei) <> ''
+              order by b1.sjtjissikbn desc, b1.sjthyojino))";
     }
 
     return "
 select
-    d.SjtKancd as kancd, d.SjtRei as rei, d.SjtYmd as ymd, d.SjtRoomNo as room,
-    d.SjtNgkb as ngkb, d.SjtSnk as dept, d.SjtSnk2 as dept2,
-    d.SjtKekkaKbn as kekka, d.SjtKinkyu as kinkyu,
-    d.SjtJutusiki1 as j1, d.SjtJutusiki2 as j2, d.SjtJutusiki3 as j3,
-    d.SjtJutusiki4 as j4, d.SjtJutusiki5 as j5, d.SjtJutusiki6 as j6,
-    d.SjtKakuJutusiki1 as k1, d.SjtKakuJutusiki2 as k2, d.SjtKakuJutusiki3 as k3,
-    d.SjtKakuJutusiki4 as k4, d.SjtKakuJutusiki5 as k5, d.SjtKakuJutusiki6 as k6,
-    d.SjtMasui1 as m1, d.SjtMasui2 as m2, d.SjtMasui3 as m3,
-    d.SjtDrcd as surgeon, d.SjtJosyucd1 as assistant, d.SjtMasuiDr1 as anesth_dr,
-    d.SjtStTime as st_time, d.SjtEnTime as en_time,
-    d.SjtMasuiStart as masui_start, d.SjtMasuiEnd as masui_end,
-    d.SjtIrai as irai,
-    s.SjtJikan as jikan, s.SjtDSFlg as dsflg,
-    s.SjtYobi1 as yobi1, s.SjtYobi2 as yobi2, s.SjtYobi3 as yobi3,
+    d.sjtkancd as kancd, d.sjtrei as rei, d.sjtymd as ymd, d.sjtroomno as room,
+    d.sjtngkb as ngkb, d.sjtsnk as dept, d.sjtsnk2 as dept2,
+    d.sjtkekkakbn as kekka, d.sjtkinkyu as kinkyu,
+    d.sjtjutusiki1 as j1, d.sjtjutusiki2 as j2, d.sjtjutusiki3 as j3,
+    d.sjtjutusiki4 as j4, d.sjtjutusiki5 as j5, d.sjtjutusiki6 as j6,
+    d.sjtkakujutusiki1 as k1, d.sjtkakujutusiki2 as k2, d.sjtkakujutusiki3 as k3,
+    d.sjtkakujutusiki4 as k4, d.sjtkakujutusiki5 as k5, d.sjtkakujutusiki6 as k6,
+    d.sjtmasui1 as m1, d.sjtmasui2 as m2, d.sjtmasui3 as m3,
+    d.sjtdrcd as surgeon, d.sjtjosyucd1 as assistant, d.sjtmasuidr1 as anesth_dr,
+    d.sjtsttime as st_time, d.sjtentime as en_time,
+    d.sjtmasuistart as masui_start, d.sjtmasuiend as masui_end,
+    d.sjtirai as irai,
+    s.sjtjikan as jikan, s.sjtdsflg as dsflg,
+    s.sjtyobi1 as yobi1, s.sjtyobi2 as yobi2, s.sjtyobi3 as yobi3,
     {$nameSel} as kanname,
     {$byomeiSel} as byomei
 from {$tDat} d
     left outer join {$tSub} s
-        on  s.SjtKancd = d.SjtKancd
-        and s.SjtRei   = d.SjtRei
+        on  s.sjtkancd = d.sjtkancd
+        and s.sjtrei   = d.sjtrei
     {$nameJoin}
 where
-    d.SjtYmd between ? and ?
-    and isnull(d.SjtYuko, '0') <> '9'
-    and d.SjtKancd between '00000001' and '99989999'
-    and isnull(substring(s.SjtYobi4, 10, 1), '0') <> '1'" . ope_cath_condition($c) . "
-order by d.SjtYmd, d.SjtStTime, d.SjtRoomNo";
+    d.sjtymd between ? and ?
+    and isnull(d.sjtyuko, '0') <> '9'
+    and d.sjtkancd between '00000001' and '99989999'
+    and isnull(substring(s.sjtyobi4, 10, 1), '0') <> '1'" . ope_cath_condition($c) . "
+order by d.sjtymd, d.sjtsttime, d.sjtroomno";
 }
 
 /**

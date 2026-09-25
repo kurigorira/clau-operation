@@ -17,6 +17,9 @@
 - **ログイン必須**（患者氏名を表示するため）
 
 ## 使っているテーブル（ベンダー定義書より）
+
+※ nagasakidb は大文字小文字を区別するため、SQL ではテーブル名・列名を**すべて小文字**（`sjtdatf3`, `sjtkancd` …）で書いています。
+
 | テーブル | 使う列 |
 |---|---|
 | `SjtDatf3`（1行＝1術例） | SjtKancd, SjtRei, SjtYmd, SjtRoomNo, SjtNgkb, SjtSnk, SjtSnk2, SjtKekkaKbn, SjtKinkyu, SjtYuko, SjtJutusiki1〜6, SjtKakuJutusiki1〜6, SjtMasui1〜3, SjtDrcd, SjtJosyucd1, SjtMasuiDr1, SjtStTime, SjtEnTime, SjtMasuiStart, SjtMasuiEnd, SjtIrai |

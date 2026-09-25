@@ -98,14 +98,14 @@ if (!$avail) {
     if ($srvOk) {
         $tDat = null;
         try {
-            $tDat = ope_t($config, 'SjtDatf3');
+            $tDat = ope_t($config, 'sjtdatf3');
             $t0 = microtime(true);
-            $r = ope_run_readonly($config, "select count(*) as cnt from {$tDat} where SjtYmd between ? and ?", [$ymdFrom, $ymdTo]);
+            $r = ope_run_readonly($config, "select count(*) as cnt from {$tDat} where sjtymd between ? and ?", [$ymdFrom, $ymdTo]);
             $ms = (int)round((microtime(true) - $t0) * 1000);
             echo '<li><code>' . h($tDat) . '</code>（手術データ）読み取り：' . $ok() . '（今月 ' . (int)($r[0]['cnt'] ?? 0) . " 件・無効/カテ含む / {$ms}ms）</li>";
             $sqlOk = true;
         } catch (Throwable $e) {
-            echo '<li><code>' . h($tDat ?? 'SjtDatf3') . '</code> 読み取り：' . $ng() . '<br><code>' . h($e->getMessage()) . '</code><br>'
+            echo '<li><code>' . h($tDat ?? 'sjtdatf3') . '</code> 読み取り：' . $ng() . '<br><code>' . h($e->getMessage()) . '</code><br>'
                . '→ 接続はできていますが、手術テーブルが見つかりません（または読む権限がありません）。下の「2-2. 手術テーブルの所在調査」を確認してください。</li>';
         }
     }
@@ -115,7 +115,7 @@ echo '</ul>';
 // ---- [2-2] 手術テーブルの所在調査（SjtDatf3 が読めないとき）----
 if ($srvOk && !$sqlOk) {
     echo "<h2 class='section-title'>2-2. 手術テーブルの所在調査</h2>";
-    echo "<p class='legend'>SjtDatf3 がどのスキーマ・どのデータベースにあるかを探します。見つかった場所を "
+    echo "<p class='legend'>sjtdatf3 がどのスキーマ・どのデータベースにあるかを探します。見つかった場所を "
        . "config.local.php の <code>sjt_prefix</code> に設定してください（現在：<code>"
        . h($config['sjt_prefix'] !== '' ? $config['sjt_prefix'] : '未設定') . '</code>）。</p>';
 
@@ -126,7 +126,7 @@ if ($srvOk && !$sqlOk) {
               where table_name like 'sjt%' order by table_schema, table_name");
         $table($found);
         foreach ($found as $f) {
-            if (strcasecmp((string)$f['table_name'], 'SjtDatf3') === 0) {
+            if (strcasecmp((string)$f['table_name'], 'sjtdatf3') === 0) {
                 echo '<p>' . $ok('見つかりました') . "：<code>'sjt_prefix' => '" . h($f['table_schema']) . ".',</code> を設定してください。</p>";
                 break;
             }
@@ -155,7 +155,7 @@ if ($srvOk && !$sqlOk) {
             if (!preg_match('/^[A-Za-z0-9_]+$/', $name)) { continue; }
             try {
                 $rows = ope_run_readonly($config,
-                    "select table_schema from [{$name}].information_schema.tables where table_name = 'SjtDatf3'");
+                    "select table_schema from [{$name}].information_schema.tables where table_name = 'sjtdatf3'");
                 $checked[] = $name . '（' . ($rows ? 'あり' : 'なし') . '）';
                 foreach ($rows as $row) { $hits[] = [$name, (string)$row['table_schema']]; }
             } catch (Throwable $e) {
@@ -169,7 +169,7 @@ if ($srvOk && !$sqlOk) {
         }
         if (!$hits) {
             echo '<p>' . $ng('見つかりませんでした') . '。ユーザー <code>' . h($config['user']) . '</code> から見えていない可能性があります。'
-               . 'ベンダーまたはDB管理者に「SjtDatf3 の置き場所（DB名・スキーマ）と、このユーザーへの SELECT 権限」を確認してください。</p>';
+               . 'ベンダーまたはDB管理者に「sjtdatf3 の置き場所（DB名・スキーマ）と、このユーザーへの SELECT 権限」を確認してください。</p>';
         }
     } catch (Throwable $e) {
         echo '<p>' . $ng('取得失敗') . '：<code>' . h($e->getMessage()) . '</code></p>';
@@ -183,21 +183,21 @@ if ($sqlOk) {
        . 'カテ室の番号は config.local.php の <code>cath_rooms</code> に設定してください（現在：<code>'
        . h(implode(', ', (array)$config['cath_rooms']) ?: '未設定') . '</code>）。</p>';
     $dists = [
-        'SjtKekkaKbn（結果入力 0:未実施 1:実施）' => 'd.SjtKekkaKbn',
-        'SjtKinkyu（0:通常 1:緊急 2:臨時）'       => 'd.SjtKinkyu',
-        'SjtYuko（0/1:有効 9:無効）'              => 'd.SjtYuko',
-        'SjtRoomNo（手術室）'                     => 'd.SjtRoomNo',
-        'SjtNgkb（入外区分）'                     => 'd.SjtNgkb',
-        'SjtSnk（診療科）'                        => 'd.SjtSnk',
-        'SjtDatf3Sub.SjtYobi4 10桁目（0:手術 1:カテ）' => 'substring(s.SjtYobi4, 10, 1)',
+        'sjtkekkakbn（結果入力 0:未実施 1:実施）' => 'd.sjtkekkakbn',
+        'sjtkinkyu（0:通常 1:緊急 2:臨時）'       => 'd.sjtkinkyu',
+        'sjtyuko（0/1:有効 9:無効）'              => 'd.sjtyuko',
+        'sjtroomno（手術室）'                     => 'd.sjtroomno',
+        'sjtngkb（入外区分）'                     => 'd.sjtngkb',
+        'sjtsnk（診療科）'                        => 'd.sjtsnk',
+        'sjtdatf3sub.sjtyobi4 10桁目（0:手術 1:カテ）' => 'substring(s.sjtyobi4, 10, 1)',
     ];
     foreach ($dists as $title => $expr) {
         echo '<h3>' . h($title) . '</h3>';
         try {
             $table(ope_run_readonly($config,
                 "select {$expr} as value, count(*) as cnt
-                   from " . ope_t($config, 'SjtDatf3') . " d left outer join " . ope_t($config, 'SjtDatf3Sub') . " s on s.SjtKancd = d.SjtKancd and s.SjtRei = d.SjtRei
-                  where d.SjtYmd between ? and ? group by {$expr} order by {$expr}", [$ymdFrom, $ymdTo]));
+                   from " . ope_t($config, 'sjtdatf3') . " d left outer join " . ope_t($config, 'sjtdatf3sub') . " s on s.sjtkancd = d.sjtkancd and s.sjtrei = d.sjtrei
+                  where d.sjtymd between ? and ? group by {$expr} order by {$expr}", [$ymdFrom, $ymdTo]));
         } catch (Throwable $e) {
             echo '<p>' . $ng('取得失敗') . '：<code>' . h($e->getMessage()) . '</code></p>';
         }
@@ -238,7 +238,8 @@ if ($srvOk) {
                from information_schema.tables t
                join information_schema.columns c on c.table_name = t.table_name
               where t.table_type = 'BASE TABLE'
-                and (t.table_name like '%name%' or t.table_name like 'sjt%' or t.table_name like '%jutu%'
+                and t.table_name not like '%hist'
+                and (t.table_name like '%name%' or t.table_name like 'sjtg%' or t.table_name = 'sjtdatf3snk' or t.table_name like '%jutu%'
                   or t.table_name like '%masui%' or t.table_name like '%dr%' or t.table_name like '%doc%'
                   or t.table_name like '%snk%' or t.table_name like '%ka%mf%')
               group by t.table_name order by t.table_name"));
@@ -264,7 +265,7 @@ if ($sqlOk) {
     } catch (Throwable $e) {
         echo '<li>実行：' . $ng() . '<br><code>' . h($e->getMessage()) . '</code>';
         if (!empty($config['with_byomei'])) {
-            echo '<br>→ 病名テーブル(SjtByokanSub2/SjtByokan)の読み取りで失敗する場合は config.local.php で '
+            echo '<br>→ 病名テーブル(sjtbyokansub2/sjtbyokan)の読み取りで失敗する場合は config.local.php で '
                . "<code>'with_byomei' => false</code> にしてください。";
         }
         echo '</li>';
