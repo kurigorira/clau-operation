@@ -1,0 +1,50 @@
+<?php
+/**
+ * 【使い方】このファイルを同じフォルダに config.local.php という名前でコピーし、
+ * 実際の値を記入してください。ここに書いた項目だけが config.php の既定値を上書きします。
+ * config.local.php は Git で追跡されず、ope フォルダを上書き配置しても消えません。
+ */
+if (!defined('OPE_APP')) { http_response_code(403); exit('Forbidden'); }
+
+return [
+    // ---- コピー先 MySQL（表示用）----
+    // 空床・レセプトアプリと同じ MySQL なら同じ値
+    'mysql' => [
+        'host'     => '127.0.0.1',
+        'port'     => '3306',
+        'database' => 'receipt_db',
+        'user'     => 'receipt_user',
+        'pass'     => 'ここにMySQLのパスワード',
+    ],
+
+    // ---- コピー元 SQL Server（医事システム）----
+    // 空床アプリ(beds/config.local.php)と同じ接続情報でよい
+    'server'   => 'ここにSQL Serverのアドレス（例 192.168.x.x や SERVER\\INSTANCE）',
+    'database' => 'nagasakidb',
+    'user'     => 'ここにSQL ServerのログインID',
+    'pass'     => 'ここにSQL Serverのパスワード',
+    // 'odbc_dsn' => 'DSN名',
+
+    // ---- 手術データ ----
+    // Newton.ini の [OPK] Catheroom=XX の値（カテ室）。複数あれば並べる
+    'cath_rooms' => [/* '09' */],
+    // kanmf の氏名列（check.php で確認。例: 'name' / 'kanjiname' など）
+    'patient_name_col' => '',
+
+    // ---- 名称辞書（任意）----
+    'room_names' => [
+        // '01' => '第1手術室',
+    ],
+    'dept_names' => [
+        // '10' => '外科',
+    ],
+    'doctor_names' => [
+        // '1234' => '山田',
+    ],
+
+    // ---- ログインユーザー（ID => パスワードハッシュ）----
+    // ハッシュは check.php 下部の「パスワードハッシュ作成」で作成して貼り付ける
+    'users' => [
+        // 'ope' => '$2y$10$..........',
+    ],
+];

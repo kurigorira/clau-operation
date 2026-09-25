@@ -1,0 +1,5 @@
+# 設定・内部処理ファイルへの直接アクセスを禁止（ブラウザから開くのは画面用PHPのみ）
+<FilesMatch "^(config\.php|config\.local\.php|config\.local\.php\.example|query\.php|store\.php|auth\.php|lib\.php)$">
+    Require all denied
+</FilesMatch>
+Options -Indexes
